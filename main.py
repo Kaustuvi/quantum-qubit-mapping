@@ -1,9 +1,12 @@
 from pyquil import Program
-from pyquil.gates import CNOT, Gate, H
+from pyquil.gates import CNOT, Gate, H, SWAP
 import networkx as nx
 from networkx.algorithms.shortest_paths import floyd_warshall_numpy
 import matplotlib.pyplot as plt
 import random
+
+from heuristic_function import heuristic_function
+from sabre import sabre
 
 #inputs
 original_circuit = Program()
@@ -24,25 +27,25 @@ logical_qubits = list(original_circuit.get_qubits())
 distance_matrix = floyd_warshall_numpy(coupling_graph)
 
 # pre-processing - circuit DAG
-qubit_dependencies = dict()
-gate_mapping = dict()
+circuit_dag_mapping = dict()
 circuit_dag = nx.DiGraph()
 circuit_instructions = original_circuit.instructions
-for index, curr_gate in enumerate(circuit_instructions):
-    if len(curr_gate.qubits) == 2:
-        gate_mapping.update({curr_gate: "g"+str(index)})
-        for curr_gate_qubit in curr_gate.qubits:
-            for prev_gate in circuit_instructions[:index]:
-                if curr_gate_qubit in prev_gate.qubits:
-                    v = gate_mapping.get(curr_gate)
-                    u = gate_mapping.get(prev_gate)
-                    qubit_dependencies.update({(curr_gate_qubit, v): u})
+for curr_gate_index, curr_gate in enumerate(circuit_instructions):
+    curr_gate_qubits = list(curr_gate.get_qubits())
+    if len(curr_gate_qubits) == 2:
+        for curr_gate_qubit in curr_gate_qubits:
+            for prev_gate_index, prev_gate in enumerate(circuit_instructions[:curr_gate_index]):
+                prev_gate_qubits = list(prev_gate.get_qubits())
+                if curr_gate_qubit in prev_gate_qubits:
+                    circuit_dag_mapping.update({(curr_gate_qubit, curr_gate_index, curr_gate): (prev_gate_index, prev_gate)})
                     
-for qubit_mapping in qubit_dependencies.keys():
-    v = qubit_mapping[1]
-    u = qubit_dependencies.get(qubit_mapping)
-    # print("For q" + str(qubit_mapping[0]) + " " + str(v) + " -> " + str(u))
-    circuit_dag.add_edge(u, v)
+
+for mapping in circuit_dag_mapping.keys():
+    v_index = mapping[1]
+    v = mapping[2]
+    u_index = circuit_dag_mapping.get(mapping)[0]
+    u = circuit_dag_mapping.get(mapping)[1]
+    circuit_dag.add_edge((u, u_index), (v, v_index))
 
 # nx.draw_networkx(circuit_dag, with_labels=True)
 # plt.show()
@@ -58,6 +61,10 @@ initial_mapping = dict()
 random.shuffle(physical_qubits)
 for l_qubit, p_qubit in zip(logical_qubits, physical_qubits):
     initial_mapping.update({l_qubit: p_qubit})
+
+# heuristic_function(F=F, circuit_dag=circuit_dag, initial_mapping=initial_mapping, distance_matrix=distance_matrix, swap_gate=SWAP(0,1))
+final_program = sabre(F = F, initial_mapping = initial_mapping, distance_matrix = distance_matrix, circuit_dag = circuit_dag, coupling_graph = coupling_graph)
+print(final_program)
 
 
 
