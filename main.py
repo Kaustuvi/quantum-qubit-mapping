@@ -8,6 +8,35 @@ import random
 from heuristic_function import heuristic_function
 from sabre import sabre
 
+def preprocessing(circuit: Program):
+    # pre-processing - circuit DAG
+    circuit_dag_mapping = dict()
+    circuit_dag = nx.DiGraph()
+    circuit_instructions = original_circuit.instructions
+    for curr_gate_index, curr_gate in enumerate(circuit_instructions):
+        curr_gate_qubits = list(curr_gate.get_qubits())
+        if len(curr_gate_qubits) == 2:
+            for curr_gate_qubit in curr_gate_qubits:
+                for prev_gate_index, prev_gate in enumerate(circuit_instructions[:curr_gate_index]):
+                    prev_gate_qubits = list(prev_gate.get_qubits())
+                    if curr_gate_qubit in prev_gate_qubits:
+                        circuit_dag_mapping.update({(curr_gate_qubit, curr_gate_index, curr_gate): (prev_gate_index, prev_gate)})
+
+    for mapping in circuit_dag_mapping.keys():
+        v_index = mapping[1]
+        v = mapping[2]
+        u_index = circuit_dag_mapping.get(mapping)[0]
+        u = circuit_dag_mapping.get(mapping)[1]
+        circuit_dag.add_edge((u, u_index), (v, v_index))
+    
+    #preprocessing - front layer initialization
+    F = list()
+    for node in circuit_dag.nodes():
+        if circuit_dag.in_degree(node) == 0:
+            F.append(node)
+
+    return F, circuit_dag
+
 #inputs
 original_circuit = Program()
 original_circuit.inst(CNOT(0, 1))
@@ -26,45 +55,22 @@ logical_qubits = list(original_circuit.get_qubits())
 #pre-processing - distance matrix
 distance_matrix = floyd_warshall_numpy(coupling_graph)
 
-# pre-processing - circuit DAG
-circuit_dag_mapping = dict()
-circuit_dag = nx.DiGraph()
-circuit_instructions = original_circuit.instructions
-for curr_gate_index, curr_gate in enumerate(circuit_instructions):
-    curr_gate_qubits = list(curr_gate.get_qubits())
-    if len(curr_gate_qubits) == 2:
-        for curr_gate_qubit in curr_gate_qubits:
-            for prev_gate_index, prev_gate in enumerate(circuit_instructions[:curr_gate_index]):
-                prev_gate_qubits = list(prev_gate.get_qubits())
-                if curr_gate_qubit in prev_gate_qubits:
-                    circuit_dag_mapping.update({(curr_gate_qubit, curr_gate_index, curr_gate): (prev_gate_index, prev_gate)})
-                    
-
-for mapping in circuit_dag_mapping.keys():
-    v_index = mapping[1]
-    v = mapping[2]
-    u_index = circuit_dag_mapping.get(mapping)[0]
-    u = circuit_dag_mapping.get(mapping)[1]
-    circuit_dag.add_edge((u, u_index), (v, v_index))
-
-# nx.draw_networkx(circuit_dag, with_labels=True)
-# plt.show()
-
-#preprocessing - front layer initialization
-F = list()
-for node in circuit_dag.nodes():
-    if circuit_dag.in_degree(node) == 0:
-        F.append(node)
-
 # preprocessing - initial mapping
 initial_mapping = dict()
 random.shuffle(physical_qubits)
 for l_qubit, p_qubit in zip(logical_qubits, physical_qubits):
     initial_mapping.update({l_qubit: p_qubit})
 
-# heuristic_function(F=F, circuit_dag=circuit_dag, initial_mapping=initial_mapping, distance_matrix=distance_matrix, swap_gate=SWAP(0,1))
-final_program = sabre(F = F, initial_mapping = initial_mapping, distance_matrix = distance_matrix, circuit_dag = circuit_dag, coupling_graph = coupling_graph)
-print(final_program)
 
+for iteration in range(15):
+    F, circuit_dag = preprocessing(original_circuit)
+    final_program, final_mapping = sabre(F = F, initial_mapping = initial_mapping, distance_matrix = distance_matrix, circuit_dag = circuit_dag, coupling_graph = coupling_graph)
 
+    reversed_ins = reversed(original_circuit.instructions)
+    original_circuit = Program()
+    for ins in reversed_ins:
+        original_circuit.inst(ins)
+    
+    initial_mapping = final_mapping
 
+print(final_program+"\n")

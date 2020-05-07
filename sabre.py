@@ -5,13 +5,14 @@ from pyquil.gates import Gate, SWAP
 from heuristic_function import heuristic_function
 
 def sabre(F = list(), initial_mapping = dict(), distance_matrix = np.matrix, circuit_dag = nx.DiGraph, coupling_graph = nx.Graph):
-    decay_parameter = [0.001] * len(list(initial_mapping.keys()))
+    decay_parameter = reset_decay_parameter(initial_mapping)
     final_program = Program()
     while len(F) > 0:
         execute_gate_list = list()
         for gate_details in F:
             if is_gate_executable(gate_details, initial_mapping, coupling_graph):
                 execute_gate_list.append(gate_details)
+                decay_parameter = reset_decay_parameter(initial_mapping)
 
         if len(execute_gate_list) > 0:
             for gate_details in execute_gate_list:
@@ -52,7 +53,7 @@ def sabre(F = list(), initial_mapping = dict(), distance_matrix = np.matrix, cir
                 initial_mapping = update_coupling_graph(min_score_swap_gate, initial_mapping, coupling_graph)
                 update_decay_parameter(min_score_swap_gate, decay_parameter)
             # F = [] #needs to be removed
-    return final_program
+    return final_program, initial_mapping
 
 def is_gate_executable(gate_details = (Gate, int), initial_mapping = dict(), coupling_graph = nx.Graph):
     gate = gate_details[0]
@@ -87,3 +88,6 @@ def update_decay_parameter(min_score_swap_gate = Gate, decay_parameter = list())
     min_score_swap_qubits = list(min_score_swap_gate.get_qubits())
     decay_parameter[min_score_swap_qubits[0]] = decay_parameter[min_score_swap_qubits[0]] + 0.001
     decay_parameter[min_score_swap_qubits[1]] = decay_parameter[min_score_swap_qubits[1]] + 0.001
+
+def reset_decay_parameter(initial_mapping: dict):
+    return [0.001] * len(list(initial_mapping.keys()))
