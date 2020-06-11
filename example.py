@@ -1,8 +1,7 @@
 from pyquil import Program
 from pyquil.gates import CNOT, Gate, H, SWAP
 import networkx as nx
-from heuristic_function import heuristic_function
-from sabre import SABRE
+from sabre_tools.sabre import SABRE
 
 from sabre_tools.circuit_preprocess import preprocess_input_circuit, get_initial_mapping, get_distance_matrix
     
@@ -29,7 +28,7 @@ print(original_circuit)
 print("initial mapping: ", initial_mapping)
 forbidden_gates = sabre_proc.rewiring_correctness(original_circuit, initial_mapping)
 print("forbidden gates: ", forbidden_gates)
-print("number of gates in input circuit", sabre_proc.cnot_count(original_circuit))
+print("number of gates in input circuit: ", sabre_proc.cnot_count(original_circuit))
 print()
 temp_mapping = initial_mapping.copy()
 temp_circuit = original_circuit.copy()
@@ -53,4 +52,4 @@ if forbidden_gates:
     print("", forbidden_gates)
 else:
     print("All gates have been executed")
-print("number of gates in input circuit", sabre_proc.cnot_count(final_program))
+print("number of gates in input circuit: ", sabre_proc.cnot_count(final_program))

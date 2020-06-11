@@ -2,7 +2,7 @@ import numpy as np
 from networkx import Graph, DiGraph
 from pyquil import Program
 from pyquil.gates import Gate, SWAP
-from heuristic_function import heuristic_function
+from sabre_tools.heuristic_function import heuristic_function
 
 class SABRE():
     def __init__(self, distance_matrix: np.matrix, coupling_graph: Graph):
