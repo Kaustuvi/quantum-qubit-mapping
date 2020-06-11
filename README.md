@@ -71,5 +71,6 @@ Another possible scope of research is to implement other algorithms in this fiel
 
 ### QC Mentorship Program
 This project has been initiated and completed as part of the [QC Mentorship Program](https://qosf.org/qc_mentorship/#summary) under [Quantum Open Source Foundation (QOSF)](https://qosf.org/) in collaboration with [Unitary Fund](https://unitary.fund/). 
+
 This work has been completed with constant guidance and motivation by my mentor Petar Korponaić
 ([LinkedIn](https://www.linkedin.com/in/petar-korponaic/)).
