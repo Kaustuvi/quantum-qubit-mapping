@@ -2,9 +2,8 @@ from networkx import DiGraph
 import numpy as np
 from pyquil.gates import Gate
 
-#design of heuristic function
 def heuristic_function(F = list(), circuit_dag = DiGraph, initial_mapping = dict(), distance_matrix = np.matrix, swap_gate = Gate, decay_parameter = list()):
-    E = create_extended_successor_set(F, circuit_dag) #extended set containing closet successors of gates in F
+    E = create_extended_successor_set(F, circuit_dag)
     min_score_swap_qubits = list(swap_gate.get_qubits())
     size_E = len(E)
     size_F = len(F)
@@ -33,5 +32,4 @@ def create_extended_successor_set(F, circuit_dag):
         for gate_successor in circuit_dag.successors(gate):
             if len(E) <= 20:
                 E.append(gate_successor)
-
     return E
