@@ -138,38 +138,3 @@ class SABRE():
             if instruction.name == 'SWAP':
                 cnot_count = cnot_count + 3
         return cnot_count
-
-        
-
-                    
-
-# def sabre(front_layer_gates = list(), qubit_mapping = dict(), distance_matrix = np.matrix, circuit_dag = nx.DiGraph, coupling_graph = nx.Graph):
-    
-#         else:
-#             for gate_details in front_layer_gates:
-#                 heuristic_score = dict()
-#                 swap_candidate_list = list()
-#                 f_gate = gate_details[0]
-#                 f_qubits = list(f_gate.get_qubits())
-#                 c_l_qubit, t_l_qubit = f_qubits[0], f_qubits[1]
-#                 c_l_qubit_neighbours, t_l_qubit_neighbours = get_physical_qubit_neighbours(c_l_qubit, t_l_qubit, qubit_mapping, coupling_graph)
-#                 for c_l_neighbour in c_l_qubit_neighbours:
-#                     swap_candidate_list.append(SWAP(c_l_qubit, c_l_neighbour))
-#                 for t_l_qubit_neighbour in t_l_qubit_neighbours:
-#                     swap_candidate_list.append(SWAP(t_l_qubit, t_l_qubit_neighbour))
-#                 for swap_gate in swap_candidate_list:
-#                     temp_mapping = update_initial_mapping(swap_gate, qubit_mapping, coupling_graph)
-#                     swap_gate_score = heuristic_function(front_layer_gates, circuit_dag, temp_mapping, distance_matrix, swap_gate, decay_parameter)
-#                     heuristic_score.update({swap_gate: swap_gate_score})
-#                 all_scores = list(heuristic_score.values())
-#                 min_score = min(all_scores)
-#                 min_score_swap_gate = swap_candidate_list[all_scores.index(min_score)]
-#                 final_circuit.inst(min_score_swap_gate)
-#                 qubit_mapping = update_initial_mapping(min_score_swap_gate, qubit_mapping, coupling_graph)
-#                 update_decay_parameter(min_score_swap_gate, decay_parameter)
-#     return final_circuit, qubit_mapping
-
-# def update_decay_parameter(min_score_swap_gate = Gate, decay_parameter = list()):
-#     min_score_swap_qubits = list(min_score_swap_gate.get_qubits())
-#     decay_parameter[min_score_swap_qubits[0]] = decay_parameter[min_score_swap_qubits[0]] + 0.001
-#     decay_parameter[min_score_swap_qubits[1]] = decay_parameter[min_score_swap_qubits[1]] + 0.001
