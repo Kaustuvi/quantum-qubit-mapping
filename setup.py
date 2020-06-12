@@ -19,16 +19,16 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="quantum-qubit-mapping",
-    version="0.1.0",
+    version="0.1.1",
     description="Qubit Mapping package and tools",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/Kaustuvi/quantum-qubit_mapping",
-    author="Kaustuvi Basu",
-    author_email="basu.kaustuvi@gmail.com",
+    author="Kaustuvi Basu, Petar Korponaić",
+    author_email="basu.kaustuvi@gmail.com, petar.korponaic@gmail.com",
     license="Apache License 2.0",
     classifiers=[
-        "Development Status :: 1 - Beta",
+        "Development Status :: 4 - Beta",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3",
         "Intended Audience :: Science/Research"
