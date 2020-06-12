@@ -19,7 +19,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="quantum-qubit-mapping",
-    version="0.1.1",
+    version="0.1.3",
     description="Qubit Mapping package and tools",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -34,7 +34,7 @@ setup(
         "Intended Audience :: Science/Research"
         ],
 
-    namespace_packages=['qubit-mapping'],
+    namespace_packages=['quantum_qubit_mapping'],
     packages=find_namespace_packages(),
     include_package_data=True,
     install_requires=[],
